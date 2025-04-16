@@ -152,11 +152,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               Elizabeth Hudson
             </span>
           </Link>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button asChild size="sm" className="bg-gradient-to-r from-primary to-purple-500 text-white">
-              <Link href="/#portfolio">Back to Portfolio</Link>
-            </Button>
-          </motion.div>
+         
         </div>
       </motion.header>
 
