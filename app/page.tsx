@@ -35,6 +35,23 @@ export default function Home() {
     }
   }
 
+  const GridItem = ({ title, description, image, link, index }) => (
+  <a href={link} className="group block">
+    <div className="relative h-48 w-full">
+      <Image
+        src={image}
+        alt={title}
+        layout="fill"
+        objectFit="cover"
+        className="rounded-md group-hover:opacity-75 transition duration-150 ease-in-out"
+      />
+    </div>
+    <h4 className="mt-4 text-lg font-medium">{title}</h4>
+    <p className="mt-2 text-sm text-gray-600">{description}</p>
+  </a>
+);
+
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Header */}
@@ -301,51 +318,51 @@ export default function Home() {
               </Reveal>
             </div>
 
-            {/* Portfolio Categories */}
-            <div className="mt-16 grid gap-16">
-              {/* Static Cover Art */}
-              <div className="space-y-8">
-                <Reveal>
-                  <h3 className="text-2xl font-bold relative inline-block">
-                    <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                      Static Cover Art
-                    </span>
-                    <span className="absolute -bottom-2 left-0 h-[2px] w-24 bg-gradient-to-r from-primary to-cyan-400"></span>
-                  </h3>
-                </Reveal>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {[
-                    {
-                      title: " Cash Flow Project",
-                      desc: "Album cover for Cash Flow Project",
-                      img: "/cash1.png",
-                      id: "cashflow-project",
-                    },
-                    {
-                      title: "What Time is it ???",
-                      desc: "Cover art for Mad MaxXx Ft. Dev Soko,A2DAMONEY",
-                      img: "/what.png",
-                      id: "what"
-                    },
-                    {
-                      title: "What is a Leader",
-                      desc: "Cover art for Rashad EAS - What Is A Leader (clean)",
-                      img: "/leader.png",
-                      id: "leader",
-                    },
-                  ].map((item, i) => (
-                    <GridItem
-                      key={i}
-                      title={item.title}
-                      description={item.desc}
-                      image={item.img}
-                      link={`/projects/${item.id}`}
-                      index={i}
-                    />
-                  ))}
-                </div>
-              </div>
-
+           {/* Portfolio Categories */}
+        <div className="mt-16 grid gap-16">
+          {/* Static Cover Art */}
+          <div className="space-y-8">
+            <Reveal>
+              <h3 className="text-2xl font-bold relative inline-block">
+                <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
+                  Static Cover Art
+                </span>
+                <span className="absolute -bottom-2 left-0 h-[2px] w-24 bg-gradient-to-r from-primary to-cyan-400"></span>
+              </h3>
+            </Reveal>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  title: "Cash Flow Project",
+                  desc: "Album cover for Cash Flow Project",
+                  img: "/cash1.png", // Ensure this image exists in your public folder
+                  id: "cashflow-project",
+                },
+                {
+                  title: "What Time is it ???",
+                  desc: "Cover art for Mad MaxXx Ft. Dev Soko, A2DAMONEY",
+                  img: "/what.png", // Ensure this image exists in your public folder
+                  id: "what",
+                },
+                {
+                  title: "What is a Leader",
+                  desc: "Cover art for Rashad EAS - What Is A Leader (clean)",
+                  img: "/leader.png", // Ensure this image exists in your public folder
+                  id: "leader",
+                },
+              ].map((item, i) => (
+                <GridItem
+                  key={i}
+                  title={item.title}
+                  description={item.desc}
+                  image={item.img}
+                  link={`/projects/${item.id}`}
+                  index={i}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
             </div>
           </div>
         </section>
