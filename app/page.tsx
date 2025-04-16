@@ -1,15 +1,31 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronRight, Mail, Twitter, ArrowRight, X } from "lucide-react"
+import { ChevronRight, Mail, ArrowRight, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
 import AnimatedBackground from "@/components/animated-background"
+import SectionHeading from "@/components/section-heading"
+import { Reveal } from "@/components/reveal"
+import ParallaxSection from "@/components/parallax-section"
+import GlitchHeading from "@/components/glitch-heading"
+import GridItem from "@/components/grid-item"
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -22,63 +38,44 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/20">
+      <header
+        className={`sticky top-0 z-50 w-full border-b border-border/40 transition-all duration-300 ${
+          scrolled ? "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/20" : "bg-background"
+        }`}
+      >
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="group flex items-center space-x-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-primary/20">
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-lg font-bold text-primary">EH</span>
               </div>
-              <div className="absolute inset-0 rounded-full border border-primary/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="absolute inset-0 rounded-full border border-primary/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-xl font-bold text-transparent">
               Elizabeth Hudson
             </span>
           </Link>
           <nav className="hidden md:flex gap-8">
-            <button
-              onClick={() => scrollToSection("about")}
-              className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              About
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => scrollToSection("portfolio")}
-              className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Portfolio
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Services
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => scrollToSection("portfolio")}
-              className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Projects
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Contact
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
+            {["about", "portfolio", "services", "projects", "contact"].map((item) => (
+              <button
+                key={item}
+                onClick={() => scrollToSection(item)}
+                className="group relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                {item.charAt(0).toUpperCase() + item.slice(1)}
+                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-primary to-purple-500 group-hover:w-full transition-all duration-300"></span>
+              </button>
+            ))}
           </nav>
-          <Button
-            onClick={() => scrollToSection("contact")}
-            size="sm"
-            className="hidden md:flex bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
-          >
-            Get in Touch
-          </Button>
+          <div>
+            <Button
+              onClick={() => scrollToSection("contact")}
+              size="sm"
+              className="hidden md:flex bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
+            >
+              Get in Touch
+            </Button>
+          </div>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <span className="sr-only">Toggle menu</span>
             {mobileMenuOpen ? (
@@ -105,51 +102,43 @@ export default function Home() {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden absolute w-full bg-background/95 backdrop-blur-md border-b border-border/40 z-50">
-            <div className="container py-4 flex flex-col space-y-4">
-              <button
-                onClick={() => scrollToSection("about")}
-                className="text-sm font-medium text-muted-foreground hover:text-primary py-2"
-              >
-                About
-              </button>
-              <button
-                onClick={() => scrollToSection("portfolio")}
-                className="text-sm font-medium text-muted-foreground hover:text-primary py-2"
-              >
-                Portfolio
-              </button>
-              <button
-                onClick={() => scrollToSection("services")}
-                className="text-sm font-medium text-muted-foreground hover:text-primary py-2"
-              >
-                Services
-              </button>
-              <button
-                onClick={() => {
-                  scrollToSection("portfolio")
-                  setMobileMenuOpen(false)
-                }}
-                className="text-sm font-medium text-muted-foreground hover:text-primary py-2 text-left w-full"
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => scrollToSection("contact")}
-                className="text-sm font-medium text-muted-foreground hover:text-primary py-2"
-              >
-                Contact
-              </button>
-              <Button
-                onClick={() => scrollToSection("contact")}
-                className="w-full bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
-              >
-                Get in Touch
-              </Button>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden absolute w-full bg-background/95 backdrop-blur-md border-b border-border/40 z-50"
+            >
+              <div className="container py-4 flex flex-col space-y-4">
+                {["about", "portfolio", "services", "projects", "contact"].map((item, i) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      scrollToSection(item)
+                      setMobileMenuOpen(false)
+                    }}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary py-2 text-left w-full"
+                  >
+                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                  </button>
+                ))}
+                <div>
+                  <Button
+                    onClick={() => {
+                      scrollToSection("contact")
+                      setMobileMenuOpen(false)
+                    }}
+                    className="w-full bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
+                  >
+                    Get in Touch
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main className="flex-1">
@@ -157,17 +146,24 @@ export default function Home() {
         <section className="relative overflow-hidden">
           <AnimatedBackground />
           <div className="container relative z-10 flex min-h-[90vh] flex-col items-center justify-center py-24 text-center">
-            <div className="glitch-wrapper">
-              <h1 className="glitch text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-                <span className="bg-gradient-to-r from-primary via-purple-500 to-cyan-400 bg-clip-text text-transparent">
-                  Transforming Sound into Vision
-                </span>
-              </h1>
-            </div>
-            <p className="mt-6 animate-fade-up text-muted-foreground animation-delay-100 max-w-3xl text-lg sm:text-xl">
-              Cover Art & Visual Storytelling for Musicians in the Digital Age
-            </p>
-            <div className="mt-10 flex animate-fade-up animation-delay-200 gap-4">
+            <GlitchHeading>
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                Transforming Sound into Vision
+              </span>
+            </GlitchHeading>
+
+            <Reveal delay={0.4}>
+              <p className="mt-6 text-muted-foreground max-w-3xl text-lg sm:text-xl">
+                Cover Art & Visual Storytelling for Musicians in the Digital Age
+              </p>
+            </Reveal>
+
+            <motion.div
+              className="mt-10 flex gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
               <Button
                 onClick={() => scrollToSection("portfolio")}
                 size="lg"
@@ -176,6 +172,7 @@ export default function Home() {
                 Explore My Work
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
+
               <Button
                 onClick={() => scrollToSection("contact")}
                 variant="outline"
@@ -184,9 +181,25 @@ export default function Home() {
               >
                 Get in Touch
               </Button>
+            </motion.div>
+
+            <div className="mt-12 flex gap-8 justify-center">
+              {[
+                { value: "50+", label: "Projects Completed" },
+                { value: "30+", label: "Happy Clients" },
+                { value: "5+", label: "Years Experience" },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <div className="text-3xl font-bold text-primary">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  {i < 2 && (
+                    <div className="h-12 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent ml-4 hidden md:block"></div>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
               <button
                 onClick={() => scrollToSection("about")}
                 className="flex flex-col items-center text-muted-foreground hover:text-primary"
@@ -213,51 +226,64 @@ export default function Home() {
         </section>
 
         {/* About Section */}
-        <section id="about" className="py-24 md:py-32 relative overflow-hidden">
+        <ParallaxSection id="about" className="py-24 md:py-32 relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-10">
             <div className="grid-background"></div>
           </div>
           <div className="container relative z-10">
             <div className="grid gap-12 md:grid-cols-2 md:gap-16 items-center">
               <div className="flex flex-col justify-center space-y-6 order-2 md:order-1">
-                <div className="inline-block rounded-lg bg-primary/20 px-3 py-1 text-sm text-primary border border-primary/30">
-                  About Me
-                </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                    Elizabeth Hudson
-                  </span>
-                </h2>
-                <p className="text-muted-foreground md:text-lg">
-                  I'm a digital artist specializing in creating futuristic cover art, motion designs, and animated
-                  videos for forward-thinking musicians. My work blends cutting-edge technology with artistic vision to
-                  create immersive visual experiences.
-                </p>
-                <p className="text-muted-foreground md:text-lg">
-                  With expertise in both traditional and digital mediums, I create visual stories that complement and
-                  enhance musical experiences, helping artists stand out in the digital landscape with visuals that
-                  resonate with modern audiences.
-                </p>
-                <div className="flex gap-4 pt-4">
-                  <Button
-                    asChild
-                    className="bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
-                  >
-                    <Link href="/projects">View My Projects</Link>
-                  </Button>
-                </div>
+                <Reveal>
+                  <div className="inline-block rounded-lg bg-primary/20 px-3 py-1 text-sm text-primary border border-primary/30">
+                    About Me
+                  </div>
+                </Reveal>
+                <Reveal delay={0.1}>
+                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                    <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+                      Elizabeth Hudson
+                    </span>
+                  </h2>
+                </Reveal>
+                <Reveal delay={0.2}>
+                  <p className="text-muted-foreground md:text-lg">
+                    I'm a digital artist specializing in creating futuristic cover art, motion designs, and animated
+                    videos for forward-thinking musicians. My work blends cutting-edge technology with artistic vision
+                    to create immersive visual experiences.
+                  </p>
+                </Reveal>
+                <Reveal delay={0.3}>
+                  <p className="text-muted-foreground md:text-lg">
+                    With expertise in both traditional and digital mediums, I create visual stories that complement and
+                    enhance musical experiences, helping artists stand out in the digital landscape with visuals that
+                    resonate with modern audiences.
+                  </p>
+                </Reveal>
+                <Reveal delay={0.4}>
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      asChild
+                      className="bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
+                    >
+                      <Link href="/projects">View My Projects</Link>
+                    </Button>
+                  </div>
+                </Reveal>
               </div>
               <div className="relative aspect-square overflow-hidden rounded-2xl border border-primary/20 order-1 md:order-2 glow-card">
-                <Image
-                  src="/elizabeth-profile.png"
-                  alt="Elizabeth Hudson - Tech Artist"
-                  fill
-                  className="object-cover"
-                />
+                <div className="h-full w-full">
+                  <Image
+                    src="/elizabeth-profile.png"
+                    alt="Elizabeth Hudson - Tech Artist"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 border-2 border-primary/0 rounded-2xl hover:border-primary/30 transition-colors duration-300"></div>
               </div>
             </div>
           </div>
-        </section>
+        </ParallaxSection>
 
         {/* Portfolio Section */}
         <section id="portfolio" className="py-24 md:py-32 relative overflow-hidden">
@@ -266,343 +292,259 @@ export default function Home() {
           </div>
           <div className="container relative z-10">
             <div className="mx-auto max-w-3xl text-center mb-16">
-              <div className="inline-block rounded-lg bg-primary/20 px-3 py-1 text-sm text-primary border border-primary/30 mb-4">
-                My Work
-              </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                  Portfolio Showcase
-                </span>
-              </h2>
-              <p className="mt-4 text-muted-foreground md:text-lg">
-                Explore my creative works across different mediums, from static cover art to dynamic motion designs and
-                animated videos.
-              </p>
+              <SectionHeading badge="My Work">Portfolio Showcase</SectionHeading>
+              <Reveal>
+                <p className="mt-4 text-muted-foreground md:text-lg">
+                  Explore my creative works across different mediums, from static cover art to dynamic motion designs
+                  and animated videos.
+                </p>
+              </Reveal>
             </div>
 
             {/* Portfolio Categories */}
             <div className="mt-16 grid gap-16">
               {/* Static Cover Art */}
               <div className="space-y-8">
-                <h3 className="text-2xl font-bold relative inline-block">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Static Cover Art
-                  </span>
-                  <span className="absolute -bottom-2 left-0 h-[2px] w-24 bg-gradient-to-r from-primary to-cyan-400"></span>
-                </h3>
+                <Reveal>
+                  <h3 className="text-2xl font-bold relative inline-block">
+                    <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
+                      Static Cover Art
+                    </span>
+                    <span className="absolute -bottom-2 left-0 h-[2px] w-24 bg-gradient-to-r from-primary to-cyan-400"></span>
+                  </h3>
+                </Reveal>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {[
                     {
-                      title: "Neon Horizon",
-                      desc: "Album cover for electronic artist",
-                      img: "/project1.jpg",
-                      id: "neon-horizon",
+                      title: " Cash Flow Project",
+                      desc: "Album cover for Cash Flow Project",
+                      img: "/cash1.png",
+                      id: "cashflow-project",
                     },
                     {
-                      title: "Digital Dreams",
-                      desc: "EP cover for indie producer",
-                      img: "/project2.jpg",
-                      id: "digital-dreams",
+                      title: "What Time is it ???",
+                      desc: "Cover art for Mad MaxXx Ft. Dev Soko,A2DAMONEY",
+                      img: "/what.png",
+                      id: "what"
                     },
                     {
-                      title: "Cyber Pulse",
-                      desc: "Single cover for techno release",
-                      img: "/project3.jpg",
-                      id: "cyber-pulse",
+                      title: "What is a Leader",
+                      desc: "Cover art for Rashad EAS - What Is A Leader (clean)",
+                      img: "/leader.png",
+                      id: "leader",
                     },
                   ].map((item, i) => (
-                    <div
+                    <GridItem
                       key={i}
-                      className="group relative overflow-hidden rounded-xl border border-primary/20 hover-glow-card"
-                    >
-                      <Image
-                        src={item.img || "/placeholder.svg"}
-                        alt={item.title}
-                        width={600}
-                        height={400}
-                        className="aspect-[3/2] w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <div className="absolute inset-0 flex flex-col justify-end p-6">
-                          <h4 className="text-lg font-bold text-white">{item.title}</h4>
-                          <p className="text-sm text-white/80">{item.desc}</p>
-                          <Link
-                            href={`/projects/${item.id}`}
-                            className="inline-flex items-center mt-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                          >
-                            View Project <ArrowRight className="ml-1 h-3 w-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+                      title={item.title}
+                      description={item.desc}
+                      image={item.img}
+                      link={`/projects/${item.id}`}
+                      index={i}
+                    />
                   ))}
                 </div>
               </div>
 
-              {/* Motion Covers */}
-              <div className="space-y-8">
-                <h3 className="text-2xl font-bold relative inline-block">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Motion Covers
-                  </span>
-                  <span className="absolute -bottom-2 left-0 h-[2px] w-24 bg-gradient-to-r from-primary to-cyan-400"></span>
-                </h3>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {[
-                    {
-                      title: "Waveform Visualizer",
-                      desc: "Animated cover for streaming platforms",
-                      img: "/project4.jpg",
-                      id: "waveform-visualizer",
-                    },
-                    {
-                      title: "Particle Flow",
-                      desc: "Dynamic album art for electronic music",
-                      img: "/project5.jpg",
-                      id: "particle-flow",
-                    },
-                    {
-                      title: "Digital Pulse",
-                      desc: "Reactive motion graphics for DJ set",
-                      img: "/project6.jpg",
-                      id: "digital-pulse",
-                    },
-                  ].map((item, i) => (
-                    <div
-                      key={i}
-                      className="group relative overflow-hidden rounded-xl border border-primary/20 hover-glow-card"
-                    >
-                      <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <div className="rounded-full bg-primary/20 p-4 backdrop-blur-sm border border-primary/30">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-8 w-8 text-primary"
-                          >
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                          </svg>
-                        </div>
-                      </div>
-                      <Image
-                        src={item.img || "/placeholder.svg"}
-                        alt={item.title}
-                        width={600}
-                        height={400}
-                        className="aspect-[3/2] w-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:blur-sm"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <div className="absolute inset-0 flex flex-col justify-end p-6">
-                          <h4 className="text-lg font-bold text-white">{item.title}</h4>
-                          <p className="text-sm text-white/80">{item.desc}</p>
-                          <Link
-                            href={`/projects/${item.id}`}
-                            className="inline-flex items-center mt-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                          >
-                            View Project <ArrowRight className="ml-1 h-3 w-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-16 text-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
-              >
-                <Link href="/projects">View All Projects</Link>
-              </Button>
             </div>
           </div>
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-24 md:py-32 relative overflow-hidden">
+        <ParallaxSection id="services" className="py-24 md:py-32 relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-10">
             <div className="grid-background"></div>
           </div>
           <div className="container relative z-10">
             <div className="mx-auto max-w-3xl text-center mb-16">
-              <div className="inline-block rounded-lg bg-primary/20 px-3 py-1 text-sm text-primary border border-primary/30 mb-4">
-                What I Offer
-              </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                  Services & Specialties
-                </span>
-              </h2>
-              <p className="mt-4 text-muted-foreground md:text-lg">
-                Specialized creative services tailored for musicians and bands looking to elevate their visual presence
-                in the digital realm.
-              </p>
+              <SectionHeading badge="What I Offer">Services & Specialties</SectionHeading>
+              <Reveal>
+                <p className="mt-4 text-muted-foreground md:text-lg">
+                  Specialized creative services tailored for musicians and bands looking to elevate their visual
+                  presence in the digital realm.
+                </p>
+              </Reveal>
             </div>
 
             <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Service 1 */}
-              <div className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-glow">
-                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6 text-primary"
-                  >
-                    <rect width="18" height="18" x="3" y="3" rx="2" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
+              {/* Service Cards */}
+              {[
+                {
+                  title: "Static Cover Art",
+                  description:
+                    "Eye-catching album and single covers designed to capture the essence of your music and stand out on streaming platforms with a futuristic edge.",
+                  icon: (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6 text-primary"
+                    >
+                      <rect width="18" height="18" x="3" y="3" rx="2" />
+                      <circle cx="9" cy="9" r="2" />
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                  ),
+                  features: ["Album & EP Covers", "Single Release Artwork", "Promotional Graphics"],
+                },
+                {
+                  title: "Motion Covers",
+                  description:
+                    "Dynamic animated covers that bring your music to life visually on digital platforms and social media with cutting-edge motion design.",
+                  icon: (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6 text-primary"
+                    >
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <path d="m10 13-2 2 2 2" />
+                      <path d="m14 17 2-2-2-2" />
+                    </svg>
+                  ),
+                  features: ["Spotify Canvas", "Animated Cover Art", "Social Media Animations"],
+                },
+                {
+                  title: "Animated Videos",
+                  description:
+                    "Captivating animated videos that tell your story and create immersive visual experiences for your audience with futuristic aesthetics.",
+                  icon: (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6 text-primary"
+                    >
+                      <path d="m22 8-6 4 6 4V8Z" />
+                      <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
+                    </svg>
+                  ),
+                  features: ["Lyric Videos", "Music Video Animation", "Visual Album Experiences"],
+                },
+              ].map((service, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-glow hover:-translate-y-2"
+                >
+                  <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
+                    {service.icon}
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold">
+                    <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
+                      {service.title}
+                    </span>
+                  </h3>
+                  <p className="mb-6 text-muted-foreground">{service.description}</p>
+                  <ul className="space-y-3 text-sm">
+                    {service.features.map((feature, j) => (
+                      <li key={j} className="flex items-center">
+                        <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <h3 className="mb-3 text-xl font-bold">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Static Cover Art
-                  </span>
-                </h3>
-                <p className="mb-6 text-muted-foreground">
-                  Eye-catching album and single covers designed to capture the essence of your music and stand out on
-                  streaming platforms with a futuristic edge.
-                </p>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Album & EP Covers
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Single Release Artwork
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Promotional Graphics
-                  </li>
-                </ul>
-              </div>
-
-              {/* Service 2 */}
-              <div className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-glow">
-                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6 text-primary"
-                  >
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <path d="m10 13-2 2 2 2" />
-                    <path d="m14 17 2-2-2-2" />
-                  </svg>
-                </div>
-                <h3 className="mb-3 text-xl font-bold">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Motion Covers
-                  </span>
-                </h3>
-                <p className="mb-6 text-muted-foreground">
-                  Dynamic animated covers that bring your music to life visually on digital platforms and social media
-                  with cutting-edge motion design.
-                </p>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Spotify Canvas
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Animated Cover Art
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Social Media Animations
-                  </li>
-                </ul>
-              </div>
-
-              {/* Service 3 */}
-              <div className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-glow">
-                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6 text-primary"
-                  >
-                    <path d="m22 8-6 4 6 4V8Z" />
-                    <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
-                  </svg>
-                </div>
-                <h3 className="mb-3 text-xl font-bold">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Animated Videos
-                  </span>
-                </h3>
-                <p className="mb-6 text-muted-foreground">
-                  Captivating animated videos that tell your story and create immersive visual experiences for your
-                  audience with futuristic aesthetics.
-                </p>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Lyric Videos
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Music Video Animation
-                  </li>
-                  <li className="flex items-center">
-                    <div className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></div>
-                    Visual Album Experiences
-                  </li>
-                </ul>
-              </div>
+              ))}
             </div>
 
             <div className="mt-16 text-center">
-              <h3 className="mb-4 text-2xl font-bold">
-                <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                  Client Benefits
-                </span>
-              </h3>
-              <p className="mx-auto max-w-3xl text-muted-foreground md:text-lg">
-                My tech-forward creative approach helps musicians and bands stand out in the digital landscape by
-                creating visual narratives that complement their musical vision. Through innovative design and
-                animation, I help artists create a cohesive brand identity that resonates with modern audiences and
-                enhances their musical storytelling.
-              </p>
-              <Button
-                onClick={() => scrollToSection("contact")}
-                className="mt-8 bg-gradient-to-r from-primary to-purple-500 text-white hover:opacity-90 hover:from-primary hover:to-purple-600"
-              >
-                Discuss Your Project
-              </Button>
+        
+            </div>
+          </div>
+        </ParallaxSection>
+
+        {/* Testimonials Section */}
+        <section className="py-24 md:py-32 relative overflow-hidden">
+          <div className="absolute inset-0 z-0 opacity-10">
+            <div className="grid-background"></div>
+          </div>
+          <div className="container relative z-10">
+            <div className="mx-auto max-w-3xl text-center mb-16">
+              <SectionHeading badge="Client Feedback">What Musicians Say</SectionHeading>
+              <Reveal>
+                <p className="mt-4 text-muted-foreground md:text-lg">
+                  Hear from artists who have transformed their visual identity with my creative services.
+                </p>
+              </Reveal>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              {/* Testimonials */}
+              {[
+                {
+                  initials: "AJ",
+                  name: "Alex Johnson",
+                  role: "Electronic Producer",
+                  quote:
+                    "Elizabeth created a stunning visual identity for my album that perfectly captured the essence of my sound. The artwork has become synonymous with my brand and helped me stand out in a crowded market.",
+                },
+                {
+                  initials: "SM",
+                  name: "Sarah Mitchell",
+                  role: "Indie Artist",
+                  quote:
+                    "Working with Elizabeth was a game-changer for my EP release. Her motion graphics added a whole new dimension to my music and significantly increased engagement on streaming platforms.",
+                },
+                {
+                  initials: "DT",
+                  name: "David Torres",
+                  role: "DJ & Producer",
+                  quote:
+                    "Elizabeth's animated visuals for my live sets have completely transformed my performances. The audience response has been incredible, and it's helped establish a unique identity for my shows.",
+                },
+              ].map((testimonial, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-glow hover:-translate-y-2"
+                >
+                  <div className="mb-4 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-lg font-bold text-primary">{testimonial.initials}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+                  <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+                  <div className="mt-4 flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="#7c3aed"
+                        stroke="none"
+                        className="mr-1"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -614,104 +556,129 @@ export default function Home() {
           </div>
           <div className="container relative z-10">
             <div className="mx-auto max-w-3xl text-center mb-16">
-              <div className="inline-block rounded-lg bg-primary/20 px-3 py-1 text-sm text-primary border border-primary/30 mb-4">
-                Connect
-              </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                  Get in Touch
-                </span>
-              </h2>
-              <p className="mt-4 text-muted-foreground md:text-lg">
-                Ready to bring your music to life visually? Let's discuss your project and create something amazing
-                together.
-              </p>
+              <SectionHeading badge="Connect">Get in Touch</SectionHeading>
+              <Reveal>
+                <p className="mt-4 text-muted-foreground md:text-lg">
+                  Ready to bring your music to life visually? Let's discuss your project and create something amazing
+                  together.
+                </p>
+              </Reveal>
             </div>
 
             <div className="mt-16 grid gap-8 md:grid-cols-2">
               <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
-                    <Mail className="h-5 w-5 text-primary" />
+                <Reveal>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
+                      <Mail className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Email</p>
+                      <a
+                        href="mailto:Lizzyanimation1@gmail.com"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        Lizzyanimation1@gmail.com
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">Email</p>
-                    <a
-                      href="mailto:Lizzyanimation1@gmail.com"
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      Lizzyanimation1@gmail.com
-                    </a>
+                </Reveal>
+                <Reveal delay={0.1}>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5 text-primary"
+                      >
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-medium">Instagram</p>
+                      <a
+                        href="https://instagram.com/lizzygraphicsz"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        @lizzygraphicsz
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 border border-primary/30">
-                    <Twitter className="h-5 w-5 text-primary" />
+                </Reveal>
+                <Reveal delay={0.2}>
+                  <div className="mt-8 rounded-xl border border-primary/20 bg-card/20 p-6 backdrop-blur-sm">
+                    <h3 className="mb-4 text-xl font-bold">
+                      <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
+                        Let's Create Together
+                      </span>
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Whether you're looking for album artwork, animated covers, or a full visual experience for your
+                      music, I'm here to help bring your vision to life with cutting-edge digital artistry. Reach out to
+                      discuss your project, timeline, and ideas.
+                    </p>
                   </div>
-                  <div>
-                    <p className="font-medium">Twitter</p>
-                    <a
-                      href="https://twitter.com/Lizzygraphics"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      @Lizzygraphics
-                    </a>
-                  </div>
-                </div>
-                <div className="mt-8 rounded-xl border border-primary/20 bg-card/20 p-6 backdrop-blur-sm">
-                  <h3 className="mb-4 text-xl font-bold">
-                    <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                      Let's Create Together
-                    </span>
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Whether you're looking for album artwork, animated covers, or a full visual experience for your
-                    music, I'm here to help bring your vision to life with cutting-edge digital artistry. Reach out to
-                    discuss your project, timeline, and ideas.
-                  </p>
-                </div>
-                <div className="relative overflow-hidden rounded-xl">
-                  <Image
-                    src="/elizabeth-studio.png"
-                    alt="Elizabeth Hudson - Digital Art Studio"
-                    width={600}
-                    height={400}
-                    className="w-full object-cover rounded-xl border border-primary/20"
-                  />
-                </div>
+                </Reveal>
+
               </div>
 
-              <div className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-glow">
-                <h3 className="mb-4 text-xl font-bold">
-                  <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
-                    Get in Touch
-                  </span>
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Ready to bring your music to life visually? I'm available for freelance projects and collaborations.
-                  Feel free to contact me through email or social media to discuss your ideas.
-                </p>
-                <div className="flex flex-col space-y-3">
-                  <a
-                    href="mailto:Lizzyanimation1@gmail.com"
-                    className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Lizzyanimation1@gmail.com
-                  </a>
-                  <a
-                    href="https://twitter.com/Lizzygraphics"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <Twitter className="h-4 w-4 mr-2" />
-                    @Lizzygraphics
-                  </a>
+              <Reveal direction="left">
+                <div className="rounded-xl border border-primary/20 bg-card/20 p-8 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-glow hover:-translate-y-2">
+                  <h3 className="mb-4 text-xl font-bold">
+                    <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent">
+                      Get in Touch
+                    </span>
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    Ready to bring your music to life visually? I'm available for freelance projects and collaborations.
+                    Feel free to contact me through email or social media to discuss your ideas.
+                  </p>
+                  <div className="flex flex-col space-y-3">
+                    <a
+                      href="mailto:Lizzyanimation1@gmail.com"
+                      className="inline-flex items-center text-primary hover:text-primary/80 transition-colors hover:translate-x-1"
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Lizzyanimation1@gmail.com
+                    </a>
+                    <a
+                      href="https://instagram.com/lizzygraphicsz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-primary hover:text-primary/80 transition-colors hover:translate-x-1"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4 mr-2"
+                      >
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                      </svg>
+                      @lizzygraphicsz
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -724,22 +691,41 @@ export default function Home() {
             &copy; {new Date().getFullYear()} Elizabeth Hudson. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <Link
-              href="mailto:Lizzyanimation1@gmail.com"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Mail className="h-5 w-5" />
-              <span className="sr-only">Email</span>
-            </Link>
-            <Link
-              href="https://twitter.com/Lizzygraphics"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Twitter className="h-5 w-5" />
-              <span className="sr-only">Twitter</span>
-            </Link>
+            <div className="hover:-translate-y-1 transition-transform duration-300">
+              <Link
+                href="mailto:Lizzyanimation1@gmail.com"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+                <span className="sr-only">Email</span>
+              </Link>
+            </div>
+            <div className="hover:-translate-y-1 transition-transform duration-300">
+              <Link
+                href="https://instagram.com/lizzygraphicsz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+                <span className="sr-only">Instagram</span>
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
